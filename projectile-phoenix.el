@@ -34,6 +34,7 @@
 
 ;;; Code:
 (require 'projectile)
+(require 'inflections)
 
 ;;; External functions
 (defun projectile-phoenix-find-controller ()
@@ -41,26 +42,31 @@
   (interactive)
   (if (projectile-phoenix-project-p)
       (projectile-completing-read "Controller: "
-                              (projectile-phoenix-controller-candidates)
+                              (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$")
                               :action (lambda (candidate)
                                         (projectile-phoenix--goto-file candidate
-                                                                      (projectile-phoenix-controllers-directory))))
+                                                                      (projectile-phoenix-web-resources-directory "controller"))))
     (message "Please call this function inside a Phoenix project."))
   )
 
 ;;; Utilities
-(defun projectile-phoenix-controllers-directory ()
-  "Return the controller directory of the Phoenix project."
-  (concat (projectile-project-root)
-          "lib/"
-          (concat (projectile-project-name) "_web")
-          "/controllers/"))
+(defun projectile-phoenix-web-resources-directory (web-resource)
+  "Return the directory of the queried WEB-RESOURCE inside the Phoenix project."
+  (expand-file-name (inflection-pluralize-string web-resource)
+                    (projectile-phoenix--web-directory)))
 
-(defun projectile-phoenix-controller-candidates ()
-  "Return a list of base controller candidates for selection."
-  (let ((controller-choices
-         (directory-files (projectile-phoenix-controllers-directory))))
-    (seq-filter (lambda (c) (string-match ".*_controller.ex$" c)) controller-choices)
+(defun projectile-phoenix--web-directory ()
+  "Return the absolute path of the web directory for the current project."
+  (expand-file-name
+   (concat (projectile-project-name) "_web")
+   (expand-file-name "lib" (projectile-project-root)))
+  )
+
+(defun projectile-phoenix-web-resource-candidates (web-resource web-resource-regexp)
+  "Return a list of base WEB-RESOURCE candidates for selection that match the provided WEB-RESOURCE-REGEXP."
+  (let ((web-resource-choices
+         (directory-files (projectile-phoenix-web-resources-directory web-resource))))
+    (seq-filter (lambda (c) (string-match web-resource-regexp c)) web-resource-choices)
     )
   )
 

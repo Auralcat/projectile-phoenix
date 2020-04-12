@@ -60,7 +60,7 @@ You'd normally combine this with `projectile-test-with-sandbox'."
      ,@body))
 
 ;;; Tests
-(describe "projectile-phoenix-controller-candidates"
+(describe "projectile-phoenix-web-resource-candidates"
           (it "returns a list of valid controller files"
               (projectile-test-with-sandbox
                (projectile-test-with-files
@@ -77,13 +77,13 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                  "sample/lib/sample_web/controllers/trashfile.ex"
                  )
                 (cd "sample")
-                (expect (projectile-phoenix-controller-candidates) :to-contain "example_controller.ex")
-                (expect (projectile-phoenix-controller-candidates) :to-contain "cogs_controller.ex")
-                (expect (projectile-phoenix-controller-candidates) :to-contain "sprockets_controller.ex")
+                (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "example_controller.ex")
+                (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "cogs_controller.ex")
+                (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "sprockets_controller.ex")
                 ))))
 
-(describe "projectile-phoenix-controllers-directory"
-          (it "returns the base controller directory in the project"
+(describe "projectile-phoenix-web-resources-directory"
+          (it "returns the base directory of the controllers in the project"
               (projectile-test-with-sandbox
                (projectile-test-with-files
                 ("sample/"
@@ -99,9 +99,9 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                  "sample/lib/sample_web/controllers/trashfile.ex"
                  )
                 (cd "sample")
-                (expect (projectile-phoenix-controllers-directory)
+                (expect (projectile-phoenix-web-resources-directory "controller")
                         :to-equal
-                        (expand-file-name "lib/sample_web/controllers/"))
+                        (expand-file-name "lib/sample_web/controllers"))
                 ))))
 
 (describe "projectile-phoenix-project-p"
