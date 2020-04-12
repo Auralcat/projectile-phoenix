@@ -80,6 +80,26 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                 (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "example_controller.ex")
                 (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "cogs_controller.ex")
                 (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "sprockets_controller.ex")
+                )))
+          (it "returns a list of valid view files"
+              (projectile-test-with-sandbox
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/sample_web/"
+                 "sample/lib/sample_web/views/"
+                 "sample/.projectile"
+                 "sample/mix.exs"
+                 "sample/lib/sample_web.ex"
+                 "sample/lib/sample_web/views/example_view.ex"
+                 "sample/lib/sample_web/views/cogs_view.ex"
+                 "sample/lib/sample_web/views/sprockets_view.ex"
+                 "sample/lib/sample_web/views/trashfile.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "example_view.ex")
+                (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "cogs_view.ex")
+                (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "sprockets_view.ex")
                 ))))
 
 (describe "projectile-phoenix-web-resources-directory"
@@ -102,6 +122,26 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                 (expect (projectile-phoenix-web-resources-directory "controller")
                         :to-equal
                         (expand-file-name "lib/sample_web/controllers"))
+                )))
+          (it "returns the base directory of the views in the project"
+              (projectile-test-with-sandbox
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/sample_web/"
+                 "sample/lib/sample_web/views/"
+                 "sample/.projectile"
+                 "sample/mix.exs"
+                 "sample/lib/sample_web.ex"
+                 "sample/lib/sample_web/views/example_view.ex"
+                 "sample/lib/sample_web/views/cogs_view.ex"
+                 "sample/lib/sample_web/views/sprockets_view.ex"
+                 "sample/lib/sample_web/views/trashfile.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix-web-resources-directory "view")
+                        :to-equal
+                        (expand-file-name "lib/sample_web/views"))
                 ))))
 
 (describe "projectile-phoenix-project-p"

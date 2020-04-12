@@ -4,11 +4,10 @@ The idea is to get stuff running and try things out in practice as soon as possi
 - [X] Set up test suite
 - Implement navigation functions
     - [X] Find controller
-    - [ ] Find view
+    - [X] Find view
     - [ ] Find template
     - [ ] Find seed file (`priv/repo/seeds.exs` )
     - [ ] Find test file
-    - [ ] Toggle between test and implementation
     - [ ] Find mix tasks
 
 ## Version 1.0

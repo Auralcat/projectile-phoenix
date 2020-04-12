@@ -5,6 +5,7 @@
 This project aims to offer quicker navigation to Phoenix-related files at first:
 
 - [X] Find controller
+- [X] Find view
 - Find context
 - Jump to test
 - Run mix tasks

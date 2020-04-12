@@ -40,16 +40,29 @@
 (defun projectile-phoenix-find-controller ()
   "Search for a controller inside the controllers directory and open it in a buffer."
   (interactive)
-  (if (projectile-phoenix-project-p)
-      (projectile-completing-read "Controller: "
-                              (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$")
-                              :action (lambda (candidate)
-                                        (projectile-phoenix--goto-file candidate
-                                                                      (projectile-phoenix-web-resources-directory "controller"))))
-    (message "Please call this function inside a Phoenix project."))
+  (projectile-phoenix--find-web-resource "controller" ".*_controller.ex$")
+  )
+
+(defun projectile-phoenix-find-view ()
+  "Search for a view inside the views directory and open it in a buffer."
+  (interactive)
+  (projectile-phoenix--find-web-resource "view" ".*_view.ex$")
   )
 
 ;;; Utilities
+(defun projectile-phoenix--find-web-resource (web-resource web-resource-regexp)
+  "Show a list of candidates for the required WEB-RESOURCE matching WEB-RESOURCE-REGEXP to the user and open the chosen candidate in a new buffer."
+  (let* ((prompt (concat (capitalize web-resource) ": ")))
+    (if (projectile-phoenix-project-p)
+        (projectile-completing-read
+         prompt
+         (projectile-phoenix-web-resource-candidates web-resource web-resource-regexp)
+         :action (lambda (candidate)
+                   (projectile-phoenix--goto-file
+                    candidate
+                    (projectile-phoenix-web-resources-directory web-resource))))
+      (message "Please call this function inside a Phoenix project."))))
+
 (defun projectile-phoenix-web-resources-directory (web-resource)
   "Return the directory of the queried WEB-RESOURCE inside the Phoenix project."
   (expand-file-name (inflection-pluralize-string web-resource)
