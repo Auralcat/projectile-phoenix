@@ -1,4 +1,4 @@
-;;; projectile-phoenix-test.el
+;;; projectile-phoenix-test.el -*- lexical-binding: t -*-
 
 ;; Copyright © 2020 Miriam Retka
 
@@ -24,6 +24,7 @@
 ;; This file is part of projectile-phoenix.
 ;; It's where we put our specs.
 
+;;; Code:
 ;; Load the files you want to test
 (let* ((current-file (if load-in-progress load-file-name (buffer-file-name)))
        (source-directory (locate-dominating-file current-file "Cask"))
@@ -59,20 +60,63 @@ You'd normally combine this with `projectile-test-with-sandbox'."
      ,@body))
 
 ;;; Tests
-(describe "projectile-phoenix-project-p"
-  (it "returns t when called inside a Phoenix project"
-(projectile-test-with-sandbox
-      (projectile-test-with-files
-       ("sample/"
-        "sample/lib/"
-        "sample/lib/sample_web/"
-        "sample/.projectile"
-        "sample/mix.exs"
-        "sample/lib/sample_web.ex"
-        )
-       (cd "sample")
-       (print default-directory)
-      (expect (projectile-phoenix-project-p) :to-be-truthy))))
+(describe "projectile-phoenix-controller-candidates"
+          (it "returns a list of valid controller files"
+              (projectile-test-with-sandbox
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/sample_web/"
+                 "sample/lib/sample_web/controllers/"
+                 "sample/.projectile"
+                 "sample/mix.exs"
+                 "sample/lib/sample_web.ex"
+                 "sample/lib/sample_web/controllers/example_controller.ex"
+                 "sample/lib/sample_web/controllers/cogs_controller.ex"
+                 "sample/lib/sample_web/controllers/sprockets_controller.ex"
+                 "sample/lib/sample_web/controllers/trashfile.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix-controller-candidates) :to-contain "example_controller.ex")
+                (expect (projectile-phoenix-controller-candidates) :to-contain "cogs_controller.ex")
+                (expect (projectile-phoenix-controller-candidates) :to-contain "sprockets_controller.ex")
+                ))))
 
-  (it "returns nil when the user is not in a Phoenix project"
-      (expect (projectile-phoenix-project-p) :not :to-be-truthy)))
+(describe "projectile-phoenix-controllers-directory"
+          (it "returns the base controller directory in the project"
+              (projectile-test-with-sandbox
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/sample_web/"
+                 "sample/lib/sample_web/controllers/"
+                 "sample/.projectile"
+                 "sample/mix.exs"
+                 "sample/lib/sample_web.ex"
+                 "sample/lib/sample_web/controllers/example_controller.ex"
+                 "sample/lib/sample_web/controllers/cogs_controller.ex"
+                 "sample/lib/sample_web/controllers/sprockets_controller.ex"
+                 "sample/lib/sample_web/controllers/trashfile.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix-controllers-directory)
+                        :to-equal
+                        (expand-file-name "lib/sample_web/controllers/"))
+                ))))
+
+(describe "projectile-phoenix-project-p"
+          (it "returns t when called inside a Phoenix project"
+              (projectile-test-with-sandbox
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/sample_web/"
+                 "sample/.projectile"
+                 "sample/mix.exs"
+                 "sample/lib/sample_web.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix-project-p) :to-be-truthy))))
+
+          (it "returns nil when the user is not in a Phoenix project"
+              (expect (projectile-phoenix-project-p) :not :to-be-truthy)))

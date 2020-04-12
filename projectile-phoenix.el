@@ -1,4 +1,4 @@
-;;; projectile-phoenix.el --- Minor mode for Phoenix projects based on projectile-mode
+;;; projectile-phoenix.el --- Minor mode for Phoenix projects based on projectile-mode -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2020 Miriam Retka
 
@@ -28,11 +28,47 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-;;; Commentary
+;;; Commentary:
 ;; This project is a helper thingy for Phoenix projects, much like
 ;; projectile-rails. But for Phoenix projects.
 
-;; Utilities
+;;; Code:
+(require 'projectile)
+
+;;; External functions
+(defun projectile-phoenix-find-controller ()
+  "Search for a controller inside the controllers directory and open it in a buffer."
+  (interactive)
+  (if (projectile-phoenix-project-p)
+      (projectile-completing-read "Controller: "
+                              (projectile-phoenix-controller-candidates)
+                              :action (lambda (candidate)
+                                        (projectile-phoenix--goto-file candidate
+                                                                      (projectile-phoenix-controllers-directory))))
+    (message "Please call this function inside a Phoenix project."))
+  )
+
+;;; Utilities
+(defun projectile-phoenix-controllers-directory ()
+  "Return the controller directory of the Phoenix project."
+  (concat (projectile-project-root)
+          "lib/"
+          (concat (projectile-project-name) "_web")
+          "/controllers/"))
+
+(defun projectile-phoenix-controller-candidates ()
+  "Return a list of base controller candidates for selection."
+  (let ((controller-choices
+         (directory-files (projectile-phoenix-controllers-directory))))
+    (seq-filter (lambda (c) (string-match ".*_controller.ex$" c)) controller-choices)
+    )
+  )
+
+(defun projectile-phoenix--goto-file (filename base-directory)
+  "Opens the file given by FILENAME starting from BASE-DIRECTORY."
+  (find-file (expand-file-name filename base-directory))
+  )
+
 (defun projectile-phoenix-project-p ()
   "Return t if called inside a Phoenix project.
 

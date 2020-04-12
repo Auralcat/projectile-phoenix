@@ -1,9 +1,9 @@
 ## What we need for version 0.1
 The idea is to get stuff running and try things out in practice as soon as possible, with confidence in the development process.
 
-- Set up test suite
+- [X] Set up test suite
 - Implement navigation functions
-    - [ ] Find controller
+    - [X] Find controller
     - [ ] Find view
     - [ ] Find template
     - [ ] Find seed file (`priv/repo/seeds.exs` )
