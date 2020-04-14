@@ -5,7 +5,7 @@ The idea is to get stuff running and try things out in practice as soon as possi
 - Implement navigation functions
     - [X] Find controller
     - [X] Find view
-    - [ ] Find template
+    - [X] Find template
     - [ ] Find seed file (`priv/repo/seeds.exs` )
     - [ ] Find test file
     - [ ] Find mix tasks

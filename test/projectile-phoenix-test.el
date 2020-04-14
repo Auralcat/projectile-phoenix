@@ -112,7 +112,29 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                 (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "sprockets_view.ex")
                 (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "first_level_view.ex")
                 (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "second_level_view.ex")
-                ))))
+                )))
+          (it "returns a list of valid template files"
+              (projectile-test-with-sandbox
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/sample_web/"
+                 "sample/lib/sample_web/templates/"
+                 "sample/lib/sample_web/templates/users/"
+                 "sample/.projectile"
+                 "sample/mix.exs"
+                 "sample/lib/sample_web.ex"
+                 "sample/lib/sample_web/templates/users/show.html.eex"
+                 "sample/lib/sample_web/templates/users/edit.html.eex"
+                 "sample/lib/sample_web/templates/users/new.html.eex"
+                 "sample/lib/sample_web/templates/trashfile.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix-web-resource-candidates "template" ".*.html.eex$") :to-contain "new.html.eex")
+                (expect (projectile-phoenix-web-resource-candidates "template" ".*.html.eex$") :to-contain "show.html.eex")
+                (expect (projectile-phoenix-web-resource-candidates "template" ".*.html.eex$") :to-contain "edit.html.eex")
+                )))
+          )
 
 (describe "projectile-phoenix-web-resources-directory"
           (it "returns the base directory of the controllers in the project"
@@ -154,6 +176,78 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                 (expect (projectile-phoenix-web-resources-directory "view")
                         :to-equal
                         (expand-file-name "lib/sample_web/views"))
+                ))))
+
+(describe "projectile-phoenix-hash-choices"
+           (it "generates a key-pair relationship between the file name and the file's absolute path"
+               (projectile-test-with-sandbox
+                (projectile-test-with-files
+                 ("sample/"
+                  "sample/lib/"
+                  "sample/lib/sample_web/"
+                  "sample/lib/sample_web/controllers/"
+                  "sample/lib/sample_web/controllers/homepage/"
+                  "sample/lib/sample_web/controllers/blog/"
+                  "sample/.projectile"
+                  "sample/mix.exs"
+                  "sample/lib/sample_web.ex"
+                  "sample/lib/sample_web/controllers/example_controller.ex"
+                  "sample/lib/sample_web/controllers/blog/sample_controller.ex"
+                  "sample/lib/sample_web/controllers/homepage/yet_another_controller.ex"
+                  "sample/lib/sample_web/controllers/cogs_controller.ex"
+                  "sample/lib/sample_web/controllers/sprockets_controller.ex"
+                  "sample/lib/sample_web/controllers/trashfile.ex"
+                  )
+                 (cd "sample")
+                 (expect (gethash "homepage/yet_another" (projectile-phoenix-hash-choices "controller" "_controller.ex$"))
+                         :to-equal
+                         (expand-file-name "lib/sample_web/controllers/homepage/yet_another_controller.ex"
+                                           (projectile-project-root)))
+                 (expect (gethash "blog/sample" (projectile-phoenix-hash-choices "controller" "_controller.ex$"))
+                         :to-equal
+                         (expand-file-name "lib/sample_web/controllers/blog/sample_controller.ex"
+                                           (projectile-project-root)))
+                 (expect (gethash "example" (projectile-phoenix-hash-choices "controller" "_controller.ex$"))
+                         :to-equal
+                         (expand-file-name "lib/sample_web/controllers/example_controller.ex"
+                                           (projectile-project-root)))
+                 ))))
+
+(describe "projectile-phoenix-context-resource-name"
+          (it "generates a context name for the resource"
+              (projectile-test-with-sandbox
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/sample_web/"
+                 "sample/lib/sample_web/controllers/"
+                 "sample/lib/sample_web/controllers/homepage/"
+                 "sample/lib/sample_web/controllers/blog/"
+                 "sample/.projectile"
+                 "sample/mix.exs"
+                 "sample/lib/sample_web.ex"
+                 "sample/lib/sample_web/controllers/example_controller.ex"
+                 "sample/lib/sample_web/controllers/blog/sample_controller.ex"
+                 "sample/lib/sample_web/controllers/homepage/yet_another_controller.ex"
+                 "sample/lib/sample_web/controllers/cogs_controller.ex"
+                 "sample/lib/sample_web/controllers/sprockets_controller.ex"
+                 "sample/lib/sample_web/controllers/trashfile.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix-context-resource-name
+                         (expand-file-name "lib/sample_web/controllers/cogs_controller.ex"
+                                           (projectile-project-root))
+                         "controller"
+                         "_controller.ex$")
+                        :to-equal
+                        "cogs")
+                (expect (projectile-phoenix-context-resource-name
+                         (expand-file-name "lib/sample_web/controllers/homepage/yet_another_controller.ex"
+                                           (projectile-project-root))
+                         "controller"
+                         "_controller.ex$")
+                        :to-equal
+                        "homepage/yet_another")
                 ))))
 
 (describe "projectile-phoenix-project-p"

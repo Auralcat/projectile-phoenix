@@ -37,30 +37,39 @@
 (require 'inflections)
 
 ;;; External functions
+;; TODO: Improve the coverage of resource regexps.
 (defun projectile-phoenix-find-controller ()
   "Search for a controller inside the controllers directory and open it in a buffer."
   (interactive)
-  (projectile-phoenix--find-web-resource "controller" ".*_controller.ex$")
+  (projectile-phoenix--find-web-resource "controller" "_controller.ex$")
   )
 
 (defun projectile-phoenix-find-view ()
   "Search for a view inside the views directory and open it in a buffer."
   (interactive)
-  (projectile-phoenix--find-web-resource "view" ".*_view.ex$")
+  (projectile-phoenix--find-web-resource "view" "_view.ex$")
+  )
+
+(defun projectile-phoenix-find-template ()
+  "Search for a template inside the templates directory and open it in a buffer."
+  (interactive)
+  (projectile-phoenix--find-web-resource "template" ".html.eex$")
   )
 
 ;;; Utilities
 (defun projectile-phoenix--find-web-resource (web-resource web-resource-regexp)
   "Show a list of candidates for the required WEB-RESOURCE matching WEB-RESOURCE-REGEXP to the user and open the chosen candidate in a new buffer."
-  (let* ((prompt (concat (capitalize web-resource) ": ")))
+  (let* (
+         (prompt (concat (capitalize web-resource) ": "))
+         (choices-hash (projectile-phoenix-hash-choices web-resource web-resource-regexp))
+         )
     (if (projectile-phoenix-project-p)
         (projectile-completing-read
          prompt
-         (projectile-phoenix-web-resource-candidates web-resource web-resource-regexp)
+         (hash-table-keys choices-hash)
          :action (lambda (candidate)
-                   (projectile-phoenix--goto-file
-                    candidate
-                    (projectile-phoenix-web-resources-directory web-resource))))
+                   (find-file (gethash candidate choices-hash)
+                    )))
       (message "Please call this function inside a Phoenix project."))))
 
 (defun projectile-phoenix-web-resources-directory (web-resource)
@@ -82,6 +91,32 @@
     (mapcar (lambda (c) (file-name-nondirectory c)) web-resource-choices)
     )
   )
+
+(defun projectile-phoenix-hash-choices (web-resource web-resource-regexp)
+  "Generate a key-pair relationship between the base file name (without the extension) and the file's absolute path.
+
+It generates a relation like this for a controller, for instance:
+
+- sample -> <project_base>/lib/<project_base>_web/controllers/sample_controller.ex
+- cogs -> <project_base>/lib/<project_base>_web/controllers/cogs_controller.ex
+- nested/sprockets -> <project_base>/lib/<project_base>_web/controllers/nested/sprockets_controller.ex"
+  (let* (
+         (base-hash (make-hash-table :test 'equal))
+         (file-collection (directory-files-recursively (projectile-phoenix-web-resources-directory web-resource) web-resource-regexp))
+         )
+    (dolist (path file-collection)
+      (puthash (projectile-phoenix-context-resource-name path web-resource web-resource-regexp) path base-hash))
+    base-hash
+    ))
+
+;; TODO: Add examples to the documentation of the functions in this file.
+;; Maybe we could also give this a better name?
+(defun projectile-phoenix-context-resource-name (resource-path resource resource-trim-regexp)
+  "Return the context-aware name of the resource given its RESOURCE-BASE-DIR and the RESOURCE-REGEXP it should match."
+  (let* ((resource-base-dir (projectile-phoenix-web-resources-directory resource)))
+    (replace-regexp-in-string resource-trim-regexp
+                            ""
+                            (file-relative-name resource-path resource-base-dir))))
 
 (defun projectile-phoenix--goto-file (filename base-directory)
   "Opens the file given by FILENAME starting from BASE-DIRECTORY."
