@@ -68,9 +68,13 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                  "sample/lib/"
                  "sample/lib/sample_web/"
                  "sample/lib/sample_web/controllers/"
+                 "sample/lib/sample_web/controllers/nested/"
+                 "sample/lib/sample_web/controllers/nested/subnested/"
                  "sample/.projectile"
                  "sample/mix.exs"
                  "sample/lib/sample_web.ex"
+                 "sample/lib/sample_web/controllers/nested/first_level_controller.ex"
+                 "sample/lib/sample_web/controllers/nested/subnested/second_level_controller.ex"
                  "sample/lib/sample_web/controllers/example_controller.ex"
                  "sample/lib/sample_web/controllers/cogs_controller.ex"
                  "sample/lib/sample_web/controllers/sprockets_controller.ex"
@@ -80,6 +84,8 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                 (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "example_controller.ex")
                 (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "cogs_controller.ex")
                 (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "sprockets_controller.ex")
+                (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "first_level_controller.ex")
+                (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "second_level_controller.ex")
                 )))
           (it "returns a list of valid view files"
               (projectile-test-with-sandbox
@@ -88,10 +94,14 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                  "sample/lib/"
                  "sample/lib/sample_web/"
                  "sample/lib/sample_web/views/"
+                 "sample/lib/sample_web/views/nested/"
+                 "sample/lib/sample_web/views/nested/subnested/"
                  "sample/.projectile"
                  "sample/mix.exs"
                  "sample/lib/sample_web.ex"
                  "sample/lib/sample_web/views/example_view.ex"
+                 "sample/lib/sample_web/views/nested/first_level_view.ex"
+                 "sample/lib/sample_web/views/nested/subnested/second_level_view.ex"
                  "sample/lib/sample_web/views/cogs_view.ex"
                  "sample/lib/sample_web/views/sprockets_view.ex"
                  "sample/lib/sample_web/views/trashfile.ex"
@@ -100,6 +110,8 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                 (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "example_view.ex")
                 (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "cogs_view.ex")
                 (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "sprockets_view.ex")
+                (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "first_level_view.ex")
+                (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "second_level_view.ex")
                 ))))
 
 (describe "projectile-phoenix-web-resources-directory"

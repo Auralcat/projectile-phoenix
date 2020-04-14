@@ -78,8 +78,8 @@
 (defun projectile-phoenix-web-resource-candidates (web-resource web-resource-regexp)
   "Return a list of base WEB-RESOURCE candidates for selection that match the provided WEB-RESOURCE-REGEXP."
   (let ((web-resource-choices
-         (directory-files (projectile-phoenix-web-resources-directory web-resource))))
-    (seq-filter (lambda (c) (string-match web-resource-regexp c)) web-resource-choices)
+         (directory-files-recursively (projectile-phoenix-web-resources-directory web-resource) web-resource-regexp)))
+    (mapcar (lambda (c) (file-name-nondirectory c)) web-resource-choices)
     )
   )
 
