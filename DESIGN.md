@@ -7,9 +7,8 @@ The idea is to get stuff running and try things out in practice as soon as possi
     - [X] Find view
     - [X] Find template
     - [X] Find seed file (`priv/repo/seeds.exs` )
-    - [ ] Find test file
-    - [ ] Find migrations
-    - [ ] Find mix tasks
+    - [X] ~~Find test file~~ Projectile does that already with `projectile-find-test-file`
+    - [X] Find migrations
 
 ## Version 1.0
 Should have stable specs and (maybe) a better UI.

@@ -178,7 +178,7 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                         (expand-file-name "lib/sample_web/views"))
                 ))))
 
-(describe "projectile-phoenix-hash-choices"
+(describe "projectile-phoenix-hash-web-resource-choices"
            (it "generates a key-pair relationship between the file name and the file's absolute path"
                (projectile-test-with-sandbox
                 (projectile-test-with-files
@@ -199,17 +199,46 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                   "sample/lib/sample_web/controllers/trashfile.ex"
                   )
                  (cd "sample")
-                 (expect (gethash "homepage/yet_another" (projectile-phoenix-hash-choices "controller" "_controller.ex$"))
+                 (expect (gethash "homepage/yet_another" (projectile-phoenix-hash-web-resource-choices "controller" "_controller.ex$"))
                          :to-equal
                          (expand-file-name "lib/sample_web/controllers/homepage/yet_another_controller.ex"
                                            (projectile-project-root)))
-                 (expect (gethash "blog/sample" (projectile-phoenix-hash-choices "controller" "_controller.ex$"))
+                 (expect (gethash "blog/sample" (projectile-phoenix-hash-web-resource-choices "controller" "_controller.ex$"))
                          :to-equal
                          (expand-file-name "lib/sample_web/controllers/blog/sample_controller.ex"
                                            (projectile-project-root)))
-                 (expect (gethash "example" (projectile-phoenix-hash-choices "controller" "_controller.ex$"))
+                 (expect (gethash "example" (projectile-phoenix-hash-web-resource-choices "controller" "_controller.ex$"))
                          :to-equal
                          (expand-file-name "lib/sample_web/controllers/example_controller.ex"
+                                           (projectile-project-root)))
+                 ))))
+
+(describe "projectile-phoenix-hash-migration-choices"
+           (it "generates a key-pair relationship between the migration name and the migration's absolute path"
+               (projectile-test-with-sandbox
+                (projectile-test-with-files
+                 ("sample/"
+                  "sample/lib/"
+                  "sample/priv/"
+                  "sample/priv/repo/"
+                  "sample/priv/repo/migrations/"
+                  "sample/priv/repo/migrations/20200319173652_sample_migration.exs"
+                  "sample/priv/repo/migrations/20200320173952_another_migration.exs"
+                  "sample/.projectile"
+                  "sample/mix.exs"
+                  "sample/lib/sample_web.ex"
+                  )
+                 (cd "sample")
+                 (expect (gethash "20200319173652_sample_migration" (projectile-phoenix-hash-migration-choices))
+                         :to-equal
+                         (expand-file-name "priv/repo/migrations/20200319173652_sample_migration.exs"
+                                           (projectile-project-root)))
+                 (expect (gethash "20200320173952_another_migration" (projectile-phoenix-hash-migration-choices))
+                         :to-equal
+                         (expand-file-name "priv/repo/migrations/20200320173952_another_migration.exs"
+                                           (projectile-project-root)))
+                 ))))
+
                                            (projectile-project-root)))
                  ))))
 

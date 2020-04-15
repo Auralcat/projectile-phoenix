@@ -53,7 +53,12 @@
 (defun projectile-phoenix-find-template ()
   "Search for a template inside the templates directory and open it in a buffer."
   (interactive)
-  (projectile-phoenix--find-web-resource "template" ".html.eex$")
+  (projectile-phoenix--find-web-resource "template" ".html.eex$"))
+
+(defun projectile-phoenix-find-migration ()
+  "Search for a migration inside the project and open it in a buffer."
+  (interactive)
+  (projectile-phoenix--find-migration)
   )
 
 (defun projectile-phoenix-find-seed-file ()
@@ -76,11 +81,33 @@ if they wish so."
    )
 
 ;;; Utilities
-(defun projectile-phoenix--find-web-resource (web-resource web-resource-regexp)
-  "Show a list of candidates for the required WEB-RESOURCE matching WEB-RESOURCE-REGEXP to the user and open the chosen candidate in a new buffer."
+(defun projectile-phoenix--find-web-resource (resource resource-regexp)
+  "Show a list of candidates for the required web RESOURCE matching RESOURCE-REGEXP to the user and open the chosen candidate in a new buffer.
+
+Web resources include:
+
+- Controllers
+- Views
+- Templates
+- Channels"
   (let* (
-         (prompt (concat (capitalize web-resource) ": "))
-         (choices-hash (projectile-phoenix-hash-choices web-resource web-resource-regexp))
+         (prompt (concat (capitalize resource) ": "))
+         (choices-hash (projectile-phoenix-hash-web-resource-choices resource resource-regexp))
+         )
+    (if (projectile-phoenix-project-p)
+        (projectile-completing-read
+         prompt
+         (hash-table-keys choices-hash)
+         :action (lambda (candidate)
+                   (find-file (gethash candidate choices-hash)
+                    )))
+      (message "Please call this function inside a Phoenix project."))))
+
+(defun projectile-phoenix--find-migration ()
+  "Show a list of candidates for migrations to the user and open the chosen candidate in a new buffer."
+  (let* (
+         (prompt "Migration: ")
+         (choices-hash (projectile-phoenix-hash-migration-choices))
          )
     (if (projectile-phoenix-project-p)
         (projectile-completing-read
@@ -111,20 +138,35 @@ if they wish so."
     )
   )
 
-(defun projectile-phoenix-hash-choices (web-resource web-resource-regexp)
+(defun projectile-phoenix-hash-web-resource-choices (resource resource-regexp)
   "Generate a key-pair relationship between the base file name (without the extension) and the file's absolute path.
 
 It generates a relation like this for a controller, for instance:
 
 - sample -> <project_base>/lib/<project_base>_web/controllers/sample_controller.ex
 - cogs -> <project_base>/lib/<project_base>_web/controllers/cogs_controller.ex
-- nested/sprockets -> <project_base>/lib/<project_base>_web/controllers/nested/sprockets_controller.ex"
+- nested/sprockets -> <project_base>/lib/<project_base>_web/controllers/nested/sprockets_controller.ex
+
+This function focuses on the processing of web resources, like controllers, views and templates.
+For resources like tests and migrations, please check projectile-phoenix-hash-resource-choices."
   (let* (
          (base-hash (make-hash-table :test 'equal))
-         (file-collection (directory-files-recursively (projectile-phoenix-web-resources-directory web-resource) web-resource-regexp))
+         (file-collection (directory-files-recursively (projectile-phoenix-web-resources-directory resource) resource-regexp))
          )
     (dolist (path file-collection)
-      (puthash (projectile-phoenix-context-resource-name path web-resource web-resource-regexp) path base-hash))
+      (puthash (projectile-phoenix-context-resource-name path resource resource-regexp) path base-hash))
+    base-hash
+    ))
+
+(defun projectile-phoenix-hash-migration-choices ()
+  "Generate a key-pair relationship between the base migration name and the migration's absolute path."
+  (let* (
+         (base-hash (make-hash-table :test 'equal))
+         (migrations-dir (expand-file-name "priv/repo/migrations" (projectile-project-root)))
+         (file-collection (directory-files-recursively migrations-dir "^[[:alnum:]].*\.exs$"))
+         )
+    (dolist (path file-collection)
+      (puthash (file-name-base path) (expand-file-name path migrations-dir) base-hash))
     base-hash
     ))
 
