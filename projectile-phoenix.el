@@ -56,6 +56,25 @@
   (projectile-phoenix--find-web-resource "template" ".html.eex$")
   )
 
+(defun projectile-phoenix-find-seed-file ()
+   "Open the seeds.exs file in the project.
+
+This is a convention used in Phoenix projects to denote seed files, usually
+located in /priv/repo.
+When the project doesn't have a seeds.exs file, prompt the user to create one
+if they wish so."
+   (interactive)
+   (let* (
+          (seeds-file-location (expand-file-name "priv/repo/seeds.exs" (projectile-project-root)))
+          )
+     (if (file-exists-p seeds-file-location)
+         (find-file seeds-file-location)
+       (if (y-or-n-p "The seeds.exs file could not be found in this project. Create one?")
+           (find-file seeds-file-location))
+       )
+     )
+   )
+
 ;;; Utilities
 (defun projectile-phoenix--find-web-resource (web-resource web-resource-regexp)
   "Show a list of candidates for the required WEB-RESOURCE matching WEB-RESOURCE-REGEXP to the user and open the chosen candidate in a new buffer."

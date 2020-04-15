@@ -6,8 +6,9 @@ The idea is to get stuff running and try things out in practice as soon as possi
     - [X] Find controller
     - [X] Find view
     - [X] Find template
-    - [ ] Find seed file (`priv/repo/seeds.exs` )
+    - [X] Find seed file (`priv/repo/seeds.exs` )
     - [ ] Find test file
+    - [ ] Find migrations
     - [ ] Find mix tasks
 
 ## Version 1.0
