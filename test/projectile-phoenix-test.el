@@ -239,6 +239,35 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                                            (projectile-project-root)))
                  ))))
 
+(describe "projectile-phoenix-hash-mix-task-choices"
+           (it "generates a key-pair relationship between the task name and the task's absolute path"
+               (projectile-test-with-sandbox
+                (projectile-test-with-files
+                 ("sample/"
+                  "sample/lib/"
+                  "sample/lib/mix/"
+                  "sample/lib/mix/tasks/"
+                  "sample/lib/mix/tasks/nested/"
+                  "sample/lib/mix/tasks/nested/another_nesting/"
+                  "sample/lib/mix/tasks/example.ex"
+                  "sample/lib/mix/tasks/nested/sample_thing.ex"
+                  "sample/lib/mix/tasks/nested/another_nesting/another_thing.ex"
+                  "sample/.projectile"
+                  "sample/mix.exs"
+                  "sample/lib/sample_web.ex"
+                  )
+                 (cd "sample")
+                 (expect (gethash "example" (projectile-phoenix-hash-mix-task-choices))
+                         :to-equal
+                         (expand-file-name "lib/mix/tasks/example.ex"
+                                           (projectile-project-root)))
+                 (expect (gethash "nested/sample_thing" (projectile-phoenix-hash-mix-task-choices))
+                         :to-equal
+                         (expand-file-name "lib/mix/tasks/nested/sample_thing.ex"
+                                           (projectile-project-root)))
+                 (expect (gethash "nested/another_nesting/another_thing" (projectile-phoenix-hash-mix-task-choices))
+                         :to-equal
+                         (expand-file-name "lib/mix/tasks/nested/another_nesting/another_thing.ex"
                                            (projectile-project-root)))
                  ))))
 

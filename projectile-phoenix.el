@@ -61,6 +61,12 @@
   (projectile-phoenix--find-migration)
   )
 
+(defun projectile-phoenix-find-mix-task ()
+    "Search for a mix task in the project and open it in a new buffer."
+  (interactive)
+  (projectile-phoenix--find-mix-task)
+  )
+
 (defun projectile-phoenix-find-test ()
     "This is a wrapper function for projectile-find-test-file."
   (interactive)
@@ -124,6 +130,21 @@ Web resources include:
                     )))
       (message "Please call this function inside a Phoenix project."))))
 
+(defun projectile-phoenix--find-mix-task ()
+  "Show a list of candidates for mix tasks to the user and open the chosen candidate in a new buffer."
+  (let* (
+         (prompt "Task: ")
+         (choices-hash (projectile-phoenix-hash-mix-task-choices))
+         )
+    (if (projectile-phoenix-project-p)
+        (projectile-completing-read
+         prompt
+         (hash-table-keys choices-hash)
+         :action (lambda (candidate)
+                   (find-file (gethash candidate choices-hash)
+                              )))
+      (message "Please call this function inside a Phoenix project."))))
+
 (defun projectile-phoenix-web-resources-directory (web-resource)
   "Return the directory of the queried WEB-RESOURCE inside the Phoenix project."
   (expand-file-name (inflection-pluralize-string web-resource)
@@ -173,6 +194,24 @@ For resources like tests and migrations, please check projectile-phoenix-hash-re
          )
     (dolist (path file-collection)
       (puthash (file-name-base path) (expand-file-name path migrations-dir) base-hash))
+    (print base-hash)
+    base-hash
+    ))
+
+(defun projectile-phoenix-hash-mix-task-choices ()
+  "Generate a key-pair relationship between the base task name and the task's absolute path."
+  (let* (
+         (base-hash (make-hash-table :test 'equal))
+         (mix-tasks-dir (expand-file-name "lib/mix/tasks" (projectile-project-root)))
+         (file-collection (directory-files-recursively mix-tasks-dir ".*\.ex$"))
+         )
+    (dolist (path file-collection)
+      (puthash
+       (replace-regexp-in-string "\.ex$"
+                                 ""
+                                 (file-relative-name path mix-tasks-dir))
+       (expand-file-name path mix-tasks-dir)
+       base-hash))
     base-hash
     ))
 
