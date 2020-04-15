@@ -61,6 +61,12 @@
   (projectile-phoenix--find-migration)
   )
 
+(defun projectile-phoenix-find-test ()
+    "This is a wrapper function for projectile-find-test-file."
+  (interactive)
+  (projectile-find-test-file)
+  )
+
 (defun projectile-phoenix-find-seed-file ()
    "Open the seeds.exs file in the project.
 
