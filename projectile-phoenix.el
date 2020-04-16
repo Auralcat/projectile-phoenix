@@ -36,6 +36,57 @@
 (require 'projectile)
 (require 'inflections)
 
+;; Keybindings
+(defgroup projectile-phoenix nil
+  "Phoenix mode based on projectile"
+  :prefix "projectile-phoenix-"
+  :group 'projectile)
+
+(defcustom projectile-phoenix-keymap-prefix nil
+  "Keymap prefix for `projectile-phoenix-mode'."
+  :group 'projectile-phoenix
+  :type 'string)
+
+(defvar projectile-phoenix-command-map
+  (let ((map (make-sparse-keymap)) )
+    (define-key map (kbd "c") 'projectile-phoenix-find-controller)
+    (define-key map (kbd "t") 'projectile-phoenix-find-test)
+    (define-key map (kbd "l") 'projectile-phoenix-find-template)
+    (define-key map (kbd "v") 'projectile-phoenix-find-view)
+    (define-key map (kbd "s") 'projectile-phoenix-find-seed-file)
+    (define-key map (kbd "n") 'projectile-phoenix-find-migration)
+    (define-key map (kbd "m") 'projectile-phoenix-find-mix-task)
+    map)
+  "Keymap after projectile-phoenix-keymap-prefix.")
+
+(defvar projectile-phoenix-mode-map
+  (let ((map (make-sparse-keymap)))
+    (when projectile-phoenix-keymap-prefix
+      (define-key map projectile-phoenix-keymap-prefix 'projectile-phoenix-command-map))
+    map
+    ))
+
+(fset 'projectile-phoenix-command-map projectile-phoenix-command-map)
+
+;; Mode declaration
+;;;###autoload
+(define-minor-mode projectile-phoenix-mode
+  "Toggle Projectile Phoenix mode.
+
+When Projectile Phoenix mode is enabled, it adds specific keybindings to navigation functions
+designed for working with Phoenix projects."
+  :initial-value nil
+  ;; Mode line indicator
+  :lighter " Phx"
+  )
+
+;;;###autoload
+(defun projectile-phoenix-on ()
+  "Enable projectile-phoenix-mode for Phoenix projects automatically."
+  (if (projectile-phoenix-project-p)
+      (projectile-phoenix-mode +1)
+    ))
+
 ;;; External functions
 ;; TODO: Improve the coverage of resource regexps.
 (defun projectile-phoenix-find-controller ()
