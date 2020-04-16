@@ -29,8 +29,9 @@
 ;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
-;; This project is a helper thingy for Phoenix projects, much like
-;; projectile-rails. But for Phoenix projects.
+;; This project is a helper extension meant for Phoenix projects, much like
+;; projectile-rails.
+;; Currently, it implements functions to navigate between Phoenix resources in a faster way.
 
 ;;; Code:
 (require 'projectile)
@@ -43,7 +44,7 @@
   :group 'projectile)
 
 (defcustom projectile-phoenix-keymap-prefix nil
-  "Keymap prefix for `projectile-phoenix-mode'."
+  "Keymap prefix for function `projectile-phoenix-mode'."
   :group 'projectile-phoenix
   :type 'string)
 
@@ -57,7 +58,7 @@
     (define-key map (kbd "n") 'projectile-phoenix-find-migration)
     (define-key map (kbd "m") 'projectile-phoenix-find-mix-task)
     map)
-  "Keymap after projectile-phoenix-keymap-prefix.")
+  "Keymap after `projectile-phoenix-keymap-prefix'.")
 
 (defvar projectile-phoenix-mode-map
   (let ((map (make-sparse-keymap)))
@@ -73,8 +74,8 @@
 (define-minor-mode projectile-phoenix-mode
   "Toggle Projectile Phoenix mode.
 
-When Projectile Phoenix mode is enabled, it adds specific keybindings to navigation functions
-designed for working with Phoenix projects."
+When Projectile Phoenix mode is enabled, it adds specific keybindings to
+navigation functions designed for working with Phoenix projects."
   :initial-value nil
   ;; Mode line indicator
   :lighter " Phx"
@@ -82,27 +83,41 @@ designed for working with Phoenix projects."
 
 ;;;###autoload
 (defun projectile-phoenix-on ()
-  "Enable projectile-phoenix-mode for Phoenix projects automatically."
-  (if (projectile-phoenix-project-p)
+  "Enable variable `projectile-phoenix-mode' inside a Phoenix project.
+
+This function is meant to be used with `define-globalized-minor-mode' in order
+to enable `projectile-phoenix-mode' automatically, without needing to add a hook
+to Elixir mode or activating the mode manually."
+  (when (projectile-phoenix-project-p)
       (projectile-phoenix-mode +1)
     ))
+
+(defun projectile-phoenix-off ()
+  "Disable variable `projectile-phoenix-mode'."
+  (projectile-phoenix-mode -1)
+    )
+
+;;;###autoload
+(define-globalized-minor-mode projectile-phoenix-global-mode
+  projectile-phoenix-mode
+  projectile-phoenix-on)
 
 ;;; External functions
 ;; TODO: Improve the coverage of resource regexps.
 (defun projectile-phoenix-find-controller ()
-  "Search for a controller inside the controllers directory and open it in a buffer."
+  "Search for a controller inside the project and open it in a buffer."
   (interactive)
   (projectile-phoenix--find-web-resource "controller" "_controller.ex$")
   )
 
 (defun projectile-phoenix-find-view ()
-  "Search for a view inside the views directory and open it in a buffer."
+  "Search for a view inside the project and open it in a buffer."
   (interactive)
   (projectile-phoenix--find-web-resource "view" "_view.ex$")
   )
 
 (defun projectile-phoenix-find-template ()
-  "Search for a template inside the templates directory and open it in a buffer."
+  "Search for a template inside the project and open it in a buffer."
   (interactive)
   (projectile-phoenix--find-web-resource "template" ".html.eex$"))
 
@@ -113,13 +128,16 @@ designed for working with Phoenix projects."
   )
 
 (defun projectile-phoenix-find-mix-task ()
-    "Search for a mix task in the project and open it in a new buffer."
+  "Search for a mix task in the project and open it in a new buffer."
   (interactive)
   (projectile-phoenix--find-mix-task)
   )
 
 (defun projectile-phoenix-find-test ()
-    "This is a wrapper function for projectile-find-test-file."
+  "This is a wrapper function for `projectile-find-test-file'.
+
+Opens the test directory in the project and shows a list of candidates
+to the user. When the user chooses one, open it in a new buffer."
   (interactive)
   (projectile-find-test-file)
   )
@@ -137,7 +155,7 @@ if they wish so."
           )
      (if (file-exists-p seeds-file-location)
          (find-file seeds-file-location)
-       (if (y-or-n-p "The seeds.exs file could not be found in this project. Create one?")
+       (if (y-or-n-p "The seeds.exs file could not be found in this project. Create one? ")
            (find-file seeds-file-location))
        )
      )
@@ -145,7 +163,9 @@ if they wish so."
 
 ;;; Utilities
 (defun projectile-phoenix--find-web-resource (resource resource-regexp)
-  "Show a list of candidates for the required web RESOURCE matching RESOURCE-REGEXP to the user and open the chosen candidate in a new buffer.
+  "Show a list of candidates for the required web RESOURCE.
+It should match the provided RESOURCE-REGEXP and open the chosen candidate
+in a new buffer.
 
 Web resources include:
 
@@ -167,7 +187,7 @@ Web resources include:
       (message "Please call this function inside a Phoenix project."))))
 
 (defun projectile-phoenix--find-migration ()
-  "Show a list of candidates for migrations to the user and open the chosen candidate in a new buffer."
+  "Show a list of migrations to the user and open the candidate in a new buffer."
   (let* (
          (prompt "Migration: ")
          (choices-hash (projectile-phoenix-hash-migration-choices))
@@ -182,7 +202,7 @@ Web resources include:
       (message "Please call this function inside a Phoenix project."))))
 
 (defun projectile-phoenix--find-mix-task ()
-  "Show a list of candidates for mix tasks to the user and open the chosen candidate in a new buffer."
+  "Show a list of mix tasks to the user and open the candidate in a new buffer."
   (let* (
          (prompt "Task: ")
          (choices-hash (projectile-phoenix-hash-mix-task-choices))
@@ -208,25 +228,34 @@ Web resources include:
    (expand-file-name "lib" (projectile-project-root)))
   )
 
-(defun projectile-phoenix-web-resource-candidates (web-resource web-resource-regexp)
-  "Return a list of base WEB-RESOURCE candidates for selection that match the provided WEB-RESOURCE-REGEXP."
+(defun projectile-phoenix-web-resource-candidates (resource resource-regexp)
+  "Return a list of base RESOURCE candidates for selection.
+
+These candidates should match the provided RESOURCE-REGEXP."
   (let ((web-resource-choices
-         (directory-files-recursively (projectile-phoenix-web-resources-directory web-resource) web-resource-regexp)))
+         (directory-files-recursively (projectile-phoenix-web-resources-directory resource) resource-regexp)))
     (mapcar (lambda (c) (file-name-nondirectory c)) web-resource-choices)
     )
   )
 
 (defun projectile-phoenix-hash-web-resource-choices (resource resource-regexp)
-  "Generate a key-pair relationship between the base file name (without the extension) and the file's absolute path.
+  "Create a hash table linking the base file name and the file's absolute path.
+
+The table is generated based on the provided web RESOURCE which matches the
+provided web RESOURCE-REGEXP.
 
 It generates a relation like this for a controller, for instance:
 
-- sample -> <project_base>/lib/<project_base>_web/controllers/sample_controller.ex
-- cogs -> <project_base>/lib/<project_base>_web/controllers/cogs_controller.ex
-- nested/sprockets -> <project_base>/lib/<project_base>_web/controllers/nested/sprockets_controller.ex
+- sample:
+  <project_base>/lib/<project_base>_web/controllers/sample_controller.ex
+- cogs:
+  <project_base>/lib/<project_base>_web/controllers/cogs_controller.ex
+- nested/sprockets:
+  <project_base>/lib/<project_base>_web/controllers/nested/sprockets_controller.ex
 
-This function focuses on the processing of web resources, like controllers, views and templates.
-For resources like tests and migrations, please check projectile-phoenix-hash-resource-choices."
+This function focuses on the processing of web resources, like controllers,
+views and templates. For resources like tests and migrations, please check
+projectile-phoenix-hash-resource-choices."
   (let* (
          (base-hash (make-hash-table :test 'equal))
          (file-collection (directory-files-recursively (projectile-phoenix-web-resources-directory resource) resource-regexp))
@@ -237,7 +266,7 @@ For resources like tests and migrations, please check projectile-phoenix-hash-re
     ))
 
 (defun projectile-phoenix-hash-migration-choices ()
-  "Generate a key-pair relationship between the base migration name and the migration's absolute path."
+  "Create a hash-table linking the base migration name and the migration's absolute path."
   (let* (
          (base-hash (make-hash-table :test 'equal))
          (migrations-dir (expand-file-name "priv/repo/migrations" (projectile-project-root)))
@@ -250,7 +279,7 @@ For resources like tests and migrations, please check projectile-phoenix-hash-re
     ))
 
 (defun projectile-phoenix-hash-mix-task-choices ()
-  "Generate a key-pair relationship between the base task name and the task's absolute path."
+  "Create a hash-table linking the base task name and the task's absolute path."
   (let* (
          (base-hash (make-hash-table :test 'equal))
          (mix-tasks-dir (expand-file-name "lib/mix/tasks" (projectile-project-root)))
@@ -269,7 +298,17 @@ For resources like tests and migrations, please check projectile-phoenix-hash-re
 ;; TODO: Add examples to the documentation of the functions in this file.
 ;; Maybe we could also give this a better name?
 (defun projectile-phoenix-context-resource-name (resource-path resource resource-trim-regexp)
-  "Return the context-aware name of the resource given its RESOURCE-BASE-DIR and the RESOURCE-REGEXP it should match."
+  "Return a name for the RESOURCE based on its context in the project.
+
+It takes the RESOURCE-PATH to trim the absolute path of the files and an
+additional RESOURCE-TRIM-REGEXP to reduce the path to a context-aware name
+for the type of RESOURCE in the project.
+
+Example:
+
+A controller in
+<project_name>/lib/<project_name>_web/controllers/nested/foo_controller.ex
+will be named 'nested/foo'."
   (let* ((resource-base-dir (projectile-phoenix-web-resources-directory resource)))
     (replace-regexp-in-string resource-trim-regexp
                             ""
@@ -282,16 +321,21 @@ For resources like tests and migrations, please check projectile-phoenix-hash-re
 
 (defun projectile-phoenix-project-p ()
   "Return t if called inside a Phoenix project.
-
 It will return nil otherwise.
-A Phoenix project is defined by:
 
-- A <project_name>_web directory
-- A <project_name>_web.ex file.
-- A mix.exs file, since it's a class of Mix project."
+One of the details of Phoenix projects is that they have a
+<project_name>_web.ex file under <project_name>/lib/.
+
+So if that file is present in the project and there is also a
+<project_name>_web directory as well, chances that that we're working
+with a Phoenix project."
   (let* (
          (phoenix-web-file (concat (projectile-project-name) "_web.ex")))
-    (file-exists-p (concat (projectile-project-root) "/" "lib/" phoenix-web-file))))
+    (and
+     (file-exists-p (concat (projectile-project-root) "/" "lib/" phoenix-web-file))
+     (file-exists-p (projectile-phoenix--web-directory))
+     )
+    ))
 
 (provide 'projectile-phoenix)
 ;;; projectile-phoenix.el ends here
