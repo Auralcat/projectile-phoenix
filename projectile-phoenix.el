@@ -57,6 +57,7 @@
     (define-key map (kbd "s") 'projectile-phoenix-find-seed-file)
     (define-key map (kbd "n") 'projectile-phoenix-find-migration)
     (define-key map (kbd "m") 'projectile-phoenix-find-mix-task)
+    (define-key map (kbd "w") 'projectile-phoenix-find-worker)
     map)
   "Keymap after `projectile-phoenix-keymap-prefix'.")
 
@@ -131,6 +132,12 @@ to Elixir mode or activating the mode manually."
   "Search for a mix task in the project and open it in a new buffer."
   (interactive)
   (projectile-phoenix--find-mix-task)
+  )
+
+(defun projectile-phoenix-find-worker ()
+  "Search for a worker in the project and open it in a new buffer."
+  (interactive)
+  (projectile-phoenix--find-worker)
   )
 
 (defun projectile-phoenix-find-test ()
@@ -216,6 +223,21 @@ Web resources include:
                               )))
       (message "Please call this function inside a Phoenix project."))))
 
+(defun projectile-phoenix--find-worker ()
+  "Show a list of workers to the user and open the candidate in a new buffer."
+  (let* (
+         (prompt "Worker: ")
+         (choices-hash (projectile-phoenix-hash-worker-choices))
+         )
+    (if (projectile-phoenix-project-p)
+        (projectile-completing-read
+         prompt
+         (hash-table-keys choices-hash)
+         :action (lambda (candidate)
+                   (find-file (gethash candidate choices-hash)
+                              )))
+      (message "Please call this function inside a Phoenix project."))))
+
 (defun projectile-phoenix-web-resources-directory (web-resource)
   "Return the directory of the queried WEB-RESOURCE inside the Phoenix project."
   (expand-file-name (inflection-pluralize-string web-resource)
@@ -227,6 +249,13 @@ Web resources include:
    (concat (projectile-project-name) "_web")
    (expand-file-name "lib" (projectile-project-root)))
   )
+
+(defun projectile-phoenix--logic-directory ()
+  "Return the absolute path of the lib/<project-name> directory.
+
+This is where Phoenix stores all the logic-related modules of the project.
+There is a separation between the framework layer, responsible for the wiring of the project, and the specific logic it uses."
+  (expand-file-name (format "lib/%s" (projectile-project-name)) (projectile-project-root)))
 
 (defun projectile-phoenix-web-resource-candidates (resource resource-regexp)
   "Return a list of base RESOURCE candidates for selection.
@@ -291,6 +320,23 @@ projectile-phoenix-hash-resource-choices."
                                  ""
                                  (file-relative-name path mix-tasks-dir))
        (expand-file-name path mix-tasks-dir)
+       base-hash))
+    base-hash
+    ))
+
+(defun projectile-phoenix-hash-worker-choices ()
+  "Create a hash-table linking the base worker name and the worker's absolute path."
+  (let* (
+         (base-hash (make-hash-table :test 'equal))
+         (logic-dir (projectile-phoenix--logic-directory))
+         (file-collection (directory-files-recursively logic-dir ".*_worker\.ex$"))
+         )
+    (dolist (path file-collection)
+      (puthash
+       (replace-regexp-in-string "_worker\.ex$"
+                                 ""
+                                 (file-relative-name path logic-dir))
+       (expand-file-name path logic-dir)
        base-hash))
     base-hash
     ))
