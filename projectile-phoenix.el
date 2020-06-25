@@ -3,8 +3,8 @@
 ;; Copyright (C) 2020 Miriam Retka
 
 ;; Author:            Miriam Retka <miriamretka@tutanota.com>
-;; URL:               <insert_url_here>
-;; Package-Version:   <insert_version_here>
+;; URL:               https://github.com/Auralcat/projectile-phoenix
+;; Package-Version:   0.1
 ;; Version:           0.1
 ;; Keywords:          elixir, phoenix, projectile
 ;; Package-Requires:  ((emacs "24.3") (projectile "0.12.0"))
