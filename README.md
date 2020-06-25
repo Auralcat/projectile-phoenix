@@ -60,14 +60,16 @@ To activate `projectile-phoenix-mode` automatically for Phoenix projects, includ
 
 ## Usage
 When inside a Phoenix project, press the key prefix that you configured and select a function:
-| Function        | Key |
-| Find controller | c   |
-| Find migration  | n   |
-| Find mix task   | m    |
-| Find seed file  | s   |
-| Find template   | l   |
-| Find test       | t   |
-| Find view       | v   |
+
+| Function | Key        |
+|-----------------:|----|
+| Find controller | c  |
+| Find migration | n  |
+| Find template | l  |
+| Find mix task | m  |
+| Find seed file | s  |
+| Find test | t  |
+| Find view | v  |
 
 ## Contributing
 For detailed instructions about how the code is structured and project goals, please check `CONTRIBUTING.md`.
