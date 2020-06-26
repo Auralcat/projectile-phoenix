@@ -59,6 +59,7 @@
     (define-key map (kbd "m") 'projectile-phoenix-find-mix-task)
     (define-key map (kbd "w") 'projectile-phoenix-find-worker)
     (define-key map (kbd "e") 'projectile-phoenix-find-module-in-context)
+    (define-key map (kbd "r") 'projectile-phoenix-find-router)
     map)
   "Keymap after `projectile-phoenix-keymap-prefix'.")
 
@@ -174,6 +175,19 @@ if they wish so."
        )
      )
    )
+
+(defun projectile-phoenix-find-router ()
+   "Open the router.ex file in the project."
+   (interactive)
+   (let* (
+          (router-file-location (expand-file-name "router.ex" (projectile-phoenix--web-directory)))
+          )
+     (if (projectile-phoenix-project-p)
+         (find-file router-file-location)
+       (message "Please call this function inside a Phoenix project.")
+       )
+     )
+  )
 
 ;;; Utilities
 (defun projectile-phoenix--find-web-resource (resource resource-regexp)
