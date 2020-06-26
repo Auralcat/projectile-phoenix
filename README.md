@@ -48,9 +48,11 @@ This example uses "C-c .", but you're free to use any other chord you like.
 (define-key projectile-phoenix-mode-map (kbd "C-c .") 'projectile-phoenix-command-map)
 ```
 
-As an alternative, if you use [evil-mode](https://github.com/emacs-evil/evil) and [evil-leader](https://github.com/emacs-evil/evil), you can set a binding to `projectile-phoenix-command-map` directly like this:
+As an alternative, if you use [evil-mode](https://github.com/emacs-evil/evil) and [evil-leader](https://github.com/emacs-evil/evil), you can set a binding to `projectile-phoenix-command-map` directly through the `find-file-hook`. It will bind the specified leader key to the package's functions when inside a Phoenix project buffer.
 ``` emacs-lisp
-(evil-leader/set-key-for-mode 'elixir-mode "." 'projectile-phoenix-command-map)
+(add-hook 'find-file-hook #'(lambda ()
+                              (when (projectile-phoenix-project-p)
+                                (evil-leader/set-key "r" 'projectile-phoenix-command-map))))
 ```
 
 To activate `projectile-phoenix-mode` automatically for Phoenix projects, include this in your `init.el`:
