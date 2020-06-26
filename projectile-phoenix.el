@@ -58,6 +58,7 @@
     (define-key map (kbd "n") 'projectile-phoenix-find-migration)
     (define-key map (kbd "m") 'projectile-phoenix-find-mix-task)
     (define-key map (kbd "w") 'projectile-phoenix-find-worker)
+    (define-key map (kbd "e") 'projectile-phoenix-find-module-in-context)
     map)
   "Keymap after `projectile-phoenix-keymap-prefix'.")
 
@@ -138,6 +139,12 @@ to Elixir mode or activating the mode manually."
   "Search for a worker in the project and open it in a new buffer."
   (interactive)
   (projectile-phoenix--find-worker)
+  )
+
+(defun projectile-phoenix-find-module-in-context ()
+  "Search for a module in the project's contexts directory and open it in a new buffer."
+  (interactive)
+  (projectile-phoenix--find-module-in-context)
   )
 
 (defun projectile-phoenix-find-test ()
@@ -228,6 +235,21 @@ Web resources include:
   (let* (
          (prompt "Worker: ")
          (choices-hash (projectile-phoenix-hash-worker-choices))
+         )
+    (if (projectile-phoenix-project-p)
+        (projectile-completing-read
+         prompt
+         (hash-table-keys choices-hash)
+         :action (lambda (candidate)
+                   (find-file (gethash candidate choices-hash)
+                              )))
+      (message "Please call this function inside a Phoenix project."))))
+
+(defun projectile-phoenix--find-module-in-context ()
+  "Show a list of modules in contexts to the user and open the candidate in a new buffer."
+  (let* (
+         (prompt "Module: ")
+         (choices-hash (projectile-phoenix-hash-module-in-context-choices))
          )
     (if (projectile-phoenix-project-p)
         (projectile-completing-read
@@ -334,6 +356,27 @@ projectile-phoenix-hash-resource-choices."
     (dolist (path file-collection)
       (puthash
        (replace-regexp-in-string "_worker\.ex$"
+                                 ""
+                                 (file-relative-name path logic-dir))
+       (expand-file-name path logic-dir)
+       base-hash))
+    base-hash
+    ))
+
+;TODO: Add the tests for these new functions.
+; Maybe we could refactor them? There's a branch for that called
+; https://github.com/auralcat/projectile-phoenix/blob/refactor-with-macros
+(defun projectile-phoenix-hash-module-in-context-choices ()
+  "Create a hash-table linking the base context module name and the module's absolute path."
+  (let* (
+         (base-hash (make-hash-table :test 'equal))
+         (logic-dir (projectile-phoenix--logic-directory))
+         (file-collection (directory-files-recursively logic-dir "\.ex$"))
+         (filtered-collection (seq-filter '(lambda (path) (not (string-match-p "_\(worker\|serializer\|parser\)\.ex$" path))) file-collection))
+         )
+    (dolist (path filtered-collection)
+      (puthash
+       (replace-regexp-in-string "\.ex$"
                                  ""
                                  (file-relative-name path logic-dir))
        (expand-file-name path logic-dir)
