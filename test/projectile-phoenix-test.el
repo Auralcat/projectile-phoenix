@@ -314,10 +314,9 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                (projectile-test-with-files
                 ("sample/"
                  "sample/lib/"
-                 "sample/lib/sample_web/"
-                 "sample/.projectile"
+                 "sample/lib/whatever_web/"
                  "sample/mix.exs"
-                 "sample/lib/sample_web.ex"
+                 "sample/lib/whatever_web.ex"
                  )
                 (cd "sample")
                 (expect (projectile-phoenix-project-p) :to-be-truthy))))

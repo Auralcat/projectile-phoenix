@@ -430,14 +430,13 @@ One of the details of Phoenix projects is that they have a
 <project_name>_web.ex file under <project_name>/lib/.
 
 So if that file is present in the project and there is also a
-<project_name>_web directory as well, chances that that we're working
-with a Phoenix project."
+<whatever>_web directory as well, chances that that we're working
+with a Phoenix project. It doesn't need to be the exact root dir name."
   (let* (
-         (phoenix-web-file (concat (projectile-project-name) "_web.ex")))
+         (phoenix-lib-directory (concat (projectile-project-root) "lib")))
     (and
-     (file-exists-p (concat (projectile-project-root) "/" "lib/" phoenix-web-file))
-     (file-exists-p (projectile-phoenix--web-directory))
-     )
+        (file-exists-p phoenix-lib-directory)
+        (directory-files phoenix-lib-directory nil "_web\.ex$"))
     ))
 
 (provide 'projectile-phoenix)
