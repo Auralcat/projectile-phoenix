@@ -66,19 +66,19 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                (projectile-test-with-files
                 ("sample/"
                  "sample/lib/"
-                 "sample/lib/sample_web/"
-                 "sample/lib/sample_web/controllers/"
-                 "sample/lib/sample_web/controllers/nested/"
-                 "sample/lib/sample_web/controllers/nested/subnested/"
+                 "sample/lib/whatever_web/"
+                 "sample/lib/whatever_web/controllers/"
+                 "sample/lib/whatever_web/controllers/nested/"
+                 "sample/lib/whatever_web/controllers/nested/subnested/"
                  "sample/.projectile"
                  "sample/mix.exs"
-                 "sample/lib/sample_web.ex"
-                 "sample/lib/sample_web/controllers/nested/first_level_controller.ex"
-                 "sample/lib/sample_web/controllers/nested/subnested/second_level_controller.ex"
-                 "sample/lib/sample_web/controllers/example_controller.ex"
-                 "sample/lib/sample_web/controllers/cogs_controller.ex"
-                 "sample/lib/sample_web/controllers/sprockets_controller.ex"
-                 "sample/lib/sample_web/controllers/trashfile.ex"
+                 "sample/lib/whatever_web.ex"
+                 "sample/lib/whatever_web/controllers/nested/first_level_controller.ex"
+                 "sample/lib/whatever_web/controllers/nested/subnested/second_level_controller.ex"
+                 "sample/lib/whatever_web/controllers/example_controller.ex"
+                 "sample/lib/whatever_web/controllers/cogs_controller.ex"
+                 "sample/lib/whatever_web/controllers/sprockets_controller.ex"
+                 "sample/lib/whatever_web/controllers/trashfile.ex"
                  )
                 (cd "sample")
                 (expect (projectile-phoenix-web-resource-candidates "controller" ".*_controller.ex$") :to-contain "example_controller.ex")
@@ -92,19 +92,19 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                (projectile-test-with-files
                 ("sample/"
                  "sample/lib/"
-                 "sample/lib/sample_web/"
-                 "sample/lib/sample_web/views/"
-                 "sample/lib/sample_web/views/nested/"
-                 "sample/lib/sample_web/views/nested/subnested/"
+                 "sample/lib/whatever_web/"
+                 "sample/lib/whatever_web/views/"
+                 "sample/lib/whatever_web/views/nested/"
+                 "sample/lib/whatever_web/views/nested/subnested/"
                  "sample/.projectile"
                  "sample/mix.exs"
-                 "sample/lib/sample_web.ex"
-                 "sample/lib/sample_web/views/example_view.ex"
-                 "sample/lib/sample_web/views/nested/first_level_view.ex"
-                 "sample/lib/sample_web/views/nested/subnested/second_level_view.ex"
-                 "sample/lib/sample_web/views/cogs_view.ex"
-                 "sample/lib/sample_web/views/sprockets_view.ex"
-                 "sample/lib/sample_web/views/trashfile.ex"
+                 "sample/lib/whatever_web.ex"
+                 "sample/lib/whatever_web/views/example_view.ex"
+                 "sample/lib/whatever_web/views/nested/first_level_view.ex"
+                 "sample/lib/whatever_web/views/nested/subnested/second_level_view.ex"
+                 "sample/lib/whatever_web/views/cogs_view.ex"
+                 "sample/lib/whatever_web/views/sprockets_view.ex"
+                 "sample/lib/whatever_web/views/trashfile.ex"
                  )
                 (cd "sample")
                 (expect (projectile-phoenix-web-resource-candidates "view" ".*_view.ex$") :to-contain "example_view.ex")
@@ -118,16 +118,16 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                (projectile-test-with-files
                 ("sample/"
                  "sample/lib/"
-                 "sample/lib/sample_web/"
-                 "sample/lib/sample_web/templates/"
-                 "sample/lib/sample_web/templates/users/"
+                 "sample/lib/whatever_web/"
+                 "sample/lib/whatever_web/templates/"
+                 "sample/lib/whatever_web/templates/users/"
                  "sample/.projectile"
                  "sample/mix.exs"
-                 "sample/lib/sample_web.ex"
-                 "sample/lib/sample_web/templates/users/show.html.eex"
-                 "sample/lib/sample_web/templates/users/edit.html.eex"
-                 "sample/lib/sample_web/templates/users/new.html.eex"
-                 "sample/lib/sample_web/templates/trashfile.ex"
+                 "sample/lib/whatever_web.ex"
+                 "sample/lib/whatever_web/templates/users/show.html.eex"
+                 "sample/lib/whatever_web/templates/users/edit.html.eex"
+                 "sample/lib/whatever_web/templates/users/new.html.eex"
+                 "sample/lib/whatever_web/templates/trashfile.ex"
                  )
                 (cd "sample")
                 (expect (projectile-phoenix-web-resource-candidates "template" ".*.html.eex$") :to-contain "new.html.eex")
@@ -142,40 +142,40 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                (projectile-test-with-files
                 ("sample/"
                  "sample/lib/"
-                 "sample/lib/sample_web/"
-                 "sample/lib/sample_web/controllers/"
+                 "sample/lib/whatever_web/"
+                 "sample/lib/whatever_web/controllers/"
                  "sample/.projectile"
                  "sample/mix.exs"
-                 "sample/lib/sample_web.ex"
-                 "sample/lib/sample_web/controllers/example_controller.ex"
-                 "sample/lib/sample_web/controllers/cogs_controller.ex"
-                 "sample/lib/sample_web/controllers/sprockets_controller.ex"
-                 "sample/lib/sample_web/controllers/trashfile.ex"
+                 "sample/lib/whatever_web.ex"
+                 "sample/lib/whatever_web/controllers/example_controller.ex"
+                 "sample/lib/whatever_web/controllers/cogs_controller.ex"
+                 "sample/lib/whatever_web/controllers/sprockets_controller.ex"
+                 "sample/lib/whatever_web/controllers/trashfile.ex"
                  )
                 (cd "sample")
                 (expect (projectile-phoenix-web-resources-directory "controller")
                         :to-equal
-                        (expand-file-name "lib/sample_web/controllers"))
+                        (expand-file-name "lib/whatever_web/controllers"))
                 )))
           (it "returns the base directory of the views in the project"
               (projectile-test-with-sandbox
                (projectile-test-with-files
                 ("sample/"
                  "sample/lib/"
-                 "sample/lib/sample_web/"
-                 "sample/lib/sample_web/views/"
+                 "sample/lib/whatever_web/"
+                 "sample/lib/whatever_web/views/"
                  "sample/.projectile"
                  "sample/mix.exs"
-                 "sample/lib/sample_web.ex"
-                 "sample/lib/sample_web/views/example_view.ex"
-                 "sample/lib/sample_web/views/cogs_view.ex"
-                 "sample/lib/sample_web/views/sprockets_view.ex"
-                 "sample/lib/sample_web/views/trashfile.ex"
+                 "sample/lib/whatever_web.ex"
+                 "sample/lib/whatever_web/views/example_view.ex"
+                 "sample/lib/whatever_web/views/cogs_view.ex"
+                 "sample/lib/whatever_web/views/sprockets_view.ex"
+                 "sample/lib/whatever_web/views/trashfile.ex"
                  )
                 (cd "sample")
                 (expect (projectile-phoenix-web-resources-directory "view")
                         :to-equal
-                        (expand-file-name "lib/sample_web/views"))
+                        (expand-file-name "lib/whatever_web/views"))
                 ))))
 
 (describe "projectile-phoenix-hash-web-resource-choices"
@@ -184,32 +184,32 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                 (projectile-test-with-files
                  ("sample/"
                   "sample/lib/"
-                  "sample/lib/sample_web/"
-                  "sample/lib/sample_web/controllers/"
-                  "sample/lib/sample_web/controllers/homepage/"
-                  "sample/lib/sample_web/controllers/blog/"
+                  "sample/lib/whatever_web/"
+                  "sample/lib/whatever_web/controllers/"
+                  "sample/lib/whatever_web/controllers/homepage/"
+                  "sample/lib/whatever_web/controllers/blog/"
                   "sample/.projectile"
                   "sample/mix.exs"
-                  "sample/lib/sample_web.ex"
-                  "sample/lib/sample_web/controllers/example_controller.ex"
-                  "sample/lib/sample_web/controllers/blog/sample_controller.ex"
-                  "sample/lib/sample_web/controllers/homepage/yet_another_controller.ex"
-                  "sample/lib/sample_web/controllers/cogs_controller.ex"
-                  "sample/lib/sample_web/controllers/sprockets_controller.ex"
-                  "sample/lib/sample_web/controllers/trashfile.ex"
+                  "sample/lib/whatever_web.ex"
+                  "sample/lib/whatever_web/controllers/example_controller.ex"
+                  "sample/lib/whatever_web/controllers/blog/sample_controller.ex"
+                  "sample/lib/whatever_web/controllers/homepage/yet_another_controller.ex"
+                  "sample/lib/whatever_web/controllers/cogs_controller.ex"
+                  "sample/lib/whatever_web/controllers/sprockets_controller.ex"
+                  "sample/lib/whatever_web/controllers/trashfile.ex"
                   )
                  (cd "sample")
                  (expect (gethash "homepage/yet_another" (projectile-phoenix-hash-web-resource-choices "controller" "_controller.ex$"))
                          :to-equal
-                         (expand-file-name "lib/sample_web/controllers/homepage/yet_another_controller.ex"
+                         (expand-file-name "lib/whatever_web/controllers/homepage/yet_another_controller.ex"
                                            (projectile-project-root)))
                  (expect (gethash "blog/sample" (projectile-phoenix-hash-web-resource-choices "controller" "_controller.ex$"))
                          :to-equal
-                         (expand-file-name "lib/sample_web/controllers/blog/sample_controller.ex"
+                         (expand-file-name "lib/whatever_web/controllers/blog/sample_controller.ex"
                                            (projectile-project-root)))
                  (expect (gethash "example" (projectile-phoenix-hash-web-resource-choices "controller" "_controller.ex$"))
                          :to-equal
-                         (expand-file-name "lib/sample_web/controllers/example_controller.ex"
+                         (expand-file-name "lib/whatever_web/controllers/example_controller.ex"
                                            (projectile-project-root)))
                  ))))
 
@@ -226,7 +226,7 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                   "sample/priv/repo/migrations/20200320173952_another_migration.exs"
                   "sample/.projectile"
                   "sample/mix.exs"
-                  "sample/lib/sample_web.ex"
+                  "sample/lib/whatever_web.ex"
                   )
                  (cd "sample")
                  (expect (gethash "20200319173652_sample_migration" (projectile-phoenix-hash-migration-choices))
@@ -254,7 +254,7 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                   "sample/lib/mix/tasks/nested/another_nesting/another_thing.ex"
                   "sample/.projectile"
                   "sample/mix.exs"
-                  "sample/lib/sample_web.ex"
+                  "sample/lib/whatever_web.ex"
                   )
                  (cd "sample")
                  (expect (gethash "example" (projectile-phoenix-hash-mix-task-choices))
@@ -277,30 +277,30 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                (projectile-test-with-files
                 ("sample/"
                  "sample/lib/"
-                 "sample/lib/sample_web/"
-                 "sample/lib/sample_web/controllers/"
-                 "sample/lib/sample_web/controllers/homepage/"
-                 "sample/lib/sample_web/controllers/blog/"
+                 "sample/lib/whatever_web/"
+                 "sample/lib/whatever_web/controllers/"
+                 "sample/lib/whatever_web/controllers/homepage/"
+                 "sample/lib/whatever_web/controllers/blog/"
                  "sample/.projectile"
                  "sample/mix.exs"
-                 "sample/lib/sample_web.ex"
-                 "sample/lib/sample_web/controllers/example_controller.ex"
-                 "sample/lib/sample_web/controllers/blog/sample_controller.ex"
-                 "sample/lib/sample_web/controllers/homepage/yet_another_controller.ex"
-                 "sample/lib/sample_web/controllers/cogs_controller.ex"
-                 "sample/lib/sample_web/controllers/sprockets_controller.ex"
-                 "sample/lib/sample_web/controllers/trashfile.ex"
+                 "sample/lib/whatever_web.ex"
+                 "sample/lib/whatever_web/controllers/example_controller.ex"
+                 "sample/lib/whatever_web/controllers/blog/sample_controller.ex"
+                 "sample/lib/whatever_web/controllers/homepage/yet_another_controller.ex"
+                 "sample/lib/whatever_web/controllers/cogs_controller.ex"
+                 "sample/lib/whatever_web/controllers/sprockets_controller.ex"
+                 "sample/lib/whatever_web/controllers/trashfile.ex"
                  )
                 (cd "sample")
                 (expect (projectile-phoenix-context-resource-name
-                         (expand-file-name "lib/sample_web/controllers/cogs_controller.ex"
+                         (expand-file-name "lib/whatever_web/controllers/cogs_controller.ex"
                                            (projectile-project-root))
                          "controller"
                          "_controller.ex$")
                         :to-equal
                         "cogs")
                 (expect (projectile-phoenix-context-resource-name
-                         (expand-file-name "lib/sample_web/controllers/homepage/yet_another_controller.ex"
+                         (expand-file-name "lib/whatever_web/controllers/homepage/yet_another_controller.ex"
                                            (projectile-project-root))
                          "controller"
                          "_controller.ex$")

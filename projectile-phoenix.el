@@ -281,9 +281,12 @@ Web resources include:
 
 (defun projectile-phoenix--web-directory ()
   "Return the absolute path of the web directory for the current project."
+  (let* (
+          (project-web-directory
+            (car (directory-files (concat (projectile-project-root) "lib/") nil "_web")))
+          )
   (expand-file-name
-   (concat (projectile-project-name) "_web")
-   (expand-file-name "lib" (projectile-project-root)))
+    (concat (projectile-project-root) "lib/" project-web-directory)))
   )
 
 (defun projectile-phoenix--logic-directory ()
