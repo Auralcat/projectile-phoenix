@@ -289,13 +289,6 @@ Web resources include:
     (concat (projectile-project-root) "lib/" project-web-directory)))
   )
 
-(defun projectile-phoenix--logic-directory ()
-  "Return the absolute path of the lib/<project-name> directory.
-
-This is where Phoenix stores all the logic-related modules of the project.
-There is a separation between the framework layer, responsible for the wiring of the project, and the specific logic it uses."
-  (expand-file-name (format "lib/%s" (projectile-project-name)) (projectile-project-root)))
-
 (defun projectile-phoenix-web-resource-candidates (resource resource-regexp)
   "Return a list of base RESOURCE candidates for selection.
 
@@ -387,7 +380,7 @@ projectile-phoenix-hash-resource-choices."
   "Create a hash-table linking the base context module name and the module's absolute path."
   (let* (
          (base-hash (make-hash-table :test 'equal))
-         (logic-dir (projectile-phoenix--logic-directory))
+         (logic-dir (projectile-phoenix--contexts-directory))
          (file-collection (directory-files-recursively logic-dir "\.ex$"))
          (filtered-collection (seq-filter '(lambda (path) (not (string-match-p "_\(worker\|serializer\|parser\)\.ex$" path))) file-collection))
          )
@@ -441,6 +434,14 @@ with a Phoenix project. It doesn't need to be the exact root dir name."
         (file-exists-p phoenix-lib-directory)
         (directory-files phoenix-lib-directory nil "_web\.ex$"))
     ))
+
+(defun projectile-phoenix--contexts-directory ()
+  "Return the name of the contexts directory in the project.
+
+It is usually a directory with the app's name, and not the root directory name.
+In the end that's just a happy coincidence."
+  (expand-file-name (concat (projectile-project-root) "lib/" (projectile-project-name)))
+  )
 
 (provide 'projectile-phoenix)
 ;;; projectile-phoenix.el ends here

@@ -178,6 +178,27 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                         (expand-file-name "lib/whatever_web/views"))
                 ))))
 
+(describe "projectile-phoenix--contexts-directory"
+          (it "returns the base directory of the context modules in the project"
+              (projectile-test-with-sandbox
+                (setq-local projectile-project-name "whatever")
+               (projectile-test-with-files
+                ("sample/"
+                 "sample/lib/"
+                 "sample/lib/whatever/"
+                 "sample/lib/whatever/accounts/"
+                 "sample/lib/whatever/business/"
+                 "sample/lib/whatever_web/"
+                 "sample/mix.exs"
+                 "sample/lib/whatever_web.ex"
+                 "sample/lib/whatever/accounts/account.ex"
+                 )
+                (cd "sample")
+                (expect (projectile-phoenix--contexts-directory)
+                        :to-equal
+                        (expand-file-name "lib/whatever"))
+                ))))
+
 (describe "projectile-phoenix-hash-web-resource-choices"
            (it "generates a key-pair relationship between the file name and the file's absolute path"
                (projectile-test-with-sandbox
@@ -270,43 +291,6 @@ You'd normally combine this with `projectile-test-with-sandbox'."
                          (expand-file-name "lib/mix/tasks/nested/another_nesting/another_thing.ex"
                                            (projectile-project-root)))
                  ))))
-
-(describe "projectile-phoenix-context-resource-name"
-          (it "generates a context name for the resource"
-              (projectile-test-with-sandbox
-               (projectile-test-with-files
-                ("sample/"
-                 "sample/lib/"
-                 "sample/lib/whatever_web/"
-                 "sample/lib/whatever_web/controllers/"
-                 "sample/lib/whatever_web/controllers/homepage/"
-                 "sample/lib/whatever_web/controllers/blog/"
-                 "sample/.projectile"
-                 "sample/mix.exs"
-                 "sample/lib/whatever_web.ex"
-                 "sample/lib/whatever_web/controllers/example_controller.ex"
-                 "sample/lib/whatever_web/controllers/blog/sample_controller.ex"
-                 "sample/lib/whatever_web/controllers/homepage/yet_another_controller.ex"
-                 "sample/lib/whatever_web/controllers/cogs_controller.ex"
-                 "sample/lib/whatever_web/controllers/sprockets_controller.ex"
-                 "sample/lib/whatever_web/controllers/trashfile.ex"
-                 )
-                (cd "sample")
-                (expect (projectile-phoenix-context-resource-name
-                         (expand-file-name "lib/whatever_web/controllers/cogs_controller.ex"
-                                           (projectile-project-root))
-                         "controller"
-                         "_controller.ex$")
-                        :to-equal
-                        "cogs")
-                (expect (projectile-phoenix-context-resource-name
-                         (expand-file-name "lib/whatever_web/controllers/homepage/yet_another_controller.ex"
-                                           (projectile-project-root))
-                         "controller"
-                         "_controller.ex$")
-                        :to-equal
-                        "homepage/yet_another")
-                ))))
 
 (describe "projectile-phoenix-project-p"
           (it "returns t when called inside a Phoenix project"
